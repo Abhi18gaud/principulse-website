@@ -1,0 +1,16 @@
+/node_modules
+.env
+logs
+database-schema.md
+backend-api-structure.md
+frontend-api-structure.md
+database-structure.md
+database-setup.md
+development-setup.md
+project-structure.md
+website_requirements.md
+authorization-system.md
+website_requirement.md
+frontend-architecture.md
+authentication-system.md
+database_setup.sql

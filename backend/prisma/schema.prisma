@@ -1,0 +1,1150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model analytics_events {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String?   @db.Uuid
+  event_type    String    @db.VarChar(50)
+  resource_type String?   @db.VarChar(50)
+  resource_id   String?   @db.Uuid
+  metadata      Json?
+  ip_address    String?   @db.Inet
+  user_agent    String?
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  users         users?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+
+  @@index([created_at], map: "idx_analytics_events_created")
+  @@index([resource_type, resource_id], map: "idx_analytics_events_resource")
+  @@index([event_type], map: "idx_analytics_events_type")
+  @@index([user_id], map: "idx_analytics_events_user")
+}
+
+model award_categories {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @db.VarChar(100)
+  slug          String          @unique @db.VarChar(100)
+  description   String?
+  criteria      String?
+  created_at    DateTime?       @default(now()) @db.Timestamp(6)
+  princi_awards princi_awards[]
+}
+
+model award_cycles {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title             String          @db.VarChar(255)
+  description       String?
+  nomination_start  DateTime        @db.Date
+  nomination_end    DateTime        @db.Date
+  voting_start      DateTime?       @db.Date
+  voting_end        DateTime?       @db.Date
+  announcement_date DateTime?       @db.Date
+  status            String?         @default("upcoming") @db.VarChar(20)
+  created_at        DateTime?       @default(now()) @db.Timestamp(6)
+  princi_awards     princi_awards[]
+}
+
+model award_votes {
+  award_id      String        @db.Uuid
+  user_id       String        @db.Uuid
+  voted_at      DateTime?     @default(now()) @db.Timestamp(6)
+  princi_awards princi_awards @relation(fields: [award_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([award_id, user_id])
+}
+
+model catalyst_enrollments {
+  workshop_id               String                    @db.Uuid
+  user_id                   String                    @db.Uuid
+  enrolled_at               DateTime?                 @default(now()) @db.Timestamp(6)
+  progress                  Int?                      @default(0)
+  completed                 Boolean?                  @default(false)
+  certificate_url           String?
+  users                     users                     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_catalyst_workshops princi_catalyst_workshops @relation(fields: [workshop_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([workshop_id, user_id])
+}
+
+model categories {
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                    String                    @db.VarChar(100)
+  slug                    String                    @unique @db.VarChar(100)
+  description             String?
+  parent_id               String?                   @db.Uuid
+  icon_url                String?
+  color                   String?                   @db.VarChar(7)
+  sort_order              Int?                      @default(0)
+  is_active               Boolean?                  @default(true)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  categories              categories?               @relation("categoriesTocategories", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_categories        categories[]              @relation("categoriesTocategories")
+  princi_post_categories  princi_post_categories[]
+  princi_voice_categories princi_voice_categories[]
+}
+
+model circle_forum_members {
+  forum_id             String               @db.Uuid
+  user_id              String               @db.Uuid
+  joined_at            DateTime?            @default(now()) @db.Timestamp(6)
+  role                 String?              @default("member") @db.VarChar(20)
+  princi_circle_forums princi_circle_forums @relation(fields: [forum_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([forum_id, user_id])
+}
+
+model edge_certificates {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  event_id           String?             @db.Uuid
+  user_id            String?             @db.Uuid
+  certificate_url    String
+  issued_at          DateTime?           @default(now()) @db.Timestamp(6)
+  princi_edge_events princi_edge_events? @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users              users?              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model edge_registrations {
+  event_id           String             @db.Uuid
+  user_id            String             @db.Uuid
+  registered_at      DateTime?          @default(now()) @db.Timestamp(6)
+  attended           Boolean?           @default(false)
+  certificate_url    String?
+  princi_edge_events princi_edge_events @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users              users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([event_id, user_id])
+  @@index([event_id], map: "idx_edge_registrations_event")
+  @@index([user_id], map: "idx_edge_registrations_user")
+}
+
+model hub_discussion_replies {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  discussion_id   String?          @db.Uuid
+  user_id         String?          @db.Uuid
+  content         String
+  created_at      DateTime?        @default(now()) @db.Timestamp(6)
+  hub_discussions hub_discussions? @relation(fields: [discussion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users?           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model hub_discussions {
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  hub_id                 String?                  @db.Uuid
+  user_id                String?                  @db.Uuid
+  title                  String                   @db.VarChar(255)
+  content                String
+  is_pinned              Boolean?                 @default(false)
+  reply_count            Int?                     @default(0)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  hub_discussion_replies hub_discussion_replies[]
+  hubs                   hubs?                    @relation(fields: [hub_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                  users?                   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model hub_event_registrations {
+  event_id      String     @db.Uuid
+  user_id       String     @db.Uuid
+  registered_at DateTime?  @default(now()) @db.Timestamp(6)
+  attended      Boolean?   @default(false)
+  hub_events    hub_events @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([event_id, user_id])
+}
+
+model hub_events {
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  hub_id                  String?                   @db.Uuid
+  organizer_id            String?                   @db.Uuid
+  title                   String                    @db.VarChar(255)
+  description             String?
+  event_type              String?                   @db.VarChar(50)
+  venue                   String?                   @db.VarChar(255)
+  address                 String?
+  start_time              DateTime                  @db.Timestamp(6)
+  end_time                DateTime                  @db.Timestamp(6)
+  max_participants        Int?
+  is_paid                 Boolean?                  @default(false)
+  price                   Decimal?                  @db.Decimal(10, 2)
+  registration_deadline   DateTime?                 @db.Timestamp(6)
+  status                  String?                   @default("upcoming") @db.VarChar(20)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  hub_event_registrations hub_event_registrations[]
+  hubs                    hubs?                     @relation(fields: [hub_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                   users?                    @relation(fields: [organizer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model hub_members {
+  hub_id    String    @db.Uuid
+  user_id   String    @db.Uuid
+  joined_at DateTime? @default(now()) @db.Timestamp(6)
+  role      String?   @default("member") @db.VarChar(20)
+  hubs      hubs      @relation(fields: [hub_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([hub_id, user_id])
+}
+
+model hubs {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String            @db.VarChar(255)
+  hub_type        String            @db.VarChar(20)
+  location        String            @db.VarChar(255)
+  description     String?
+  leader_id       String?           @db.Uuid
+  member_count    Int?              @default(0)
+  is_active       Boolean?          @default(true)
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  hub_discussions hub_discussions[]
+  hub_events      hub_events[]
+  hub_members     hub_members[]
+  users           users?            @relation(fields: [leader_id], references: [id], onUpdate: NoAction)
+}
+
+model mentorship_connections {
+  id                                            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mentor_id                                     String?               @db.Uuid
+  mentee_id                                     String?               @db.Uuid
+  program_id                                    String?               @db.Uuid
+  status                                        String?               @default("active") @db.VarChar(20)
+  start_date                                    DateTime?             @default(dbgenerated("CURRENT_DATE")) @db.Date
+  end_date                                      DateTime?             @db.Date
+  goals                                         String[]
+  notes                                         String?
+  created_at                                    DateTime?             @default(now()) @db.Timestamp(6)
+  users_mentorship_connections_mentee_idTousers users?                @relation("mentorship_connections_mentee_idTousers", fields: [mentee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentorship_connections_mentor_idTousers users?                @relation("mentorship_connections_mentor_idTousers", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mentorship_programs                           mentorship_programs?  @relation(fields: [program_id], references: [id], onUpdate: NoAction)
+  mentorship_sessions                           mentorship_sessions[]
+}
+
+model mentorship_profiles {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String?   @db.Uuid
+  mentorship_type  String    @db.VarChar(20)
+  expertise_areas  String[]
+  experience_years Int?
+  mentorship_style String?
+  availability     String?
+  max_mentees      Int?
+  current_mentees  Int?      @default(0)
+  bio              String?
+  is_available     Boolean?  @default(true)
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  users            users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model mentorship_programs {
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                  String                   @db.VarChar(255)
+  description            String?
+  program_type           String?                  @db.VarChar(50)
+  duration_weeks         Int?
+  start_date             DateTime?                @db.Date
+  end_date               DateTime?                @db.Date
+  is_paid                Boolean?                 @default(false)
+  price                  Decimal?                 @db.Decimal(10, 2)
+  max_participants       Int?
+  status                 String?                  @default("open") @db.VarChar(20)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  mentorship_connections mentorship_connections[]
+}
+
+model mentorship_sessions {
+  id                     String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  connection_id          String?                 @db.Uuid
+  title                  String?                 @db.VarChar(255)
+  session_date           DateTime                @db.Timestamp(6)
+  duration_minutes       Int?
+  notes                  String?
+  action_items           String[]
+  next_session_date      DateTime?               @db.Timestamp(6)
+  created_at             DateTime?               @default(now()) @db.Timestamp(6)
+  mentorship_connections mentorship_connections? @relation(fields: [connection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model notifications {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id           String?   @db.Uuid
+  title             String    @db.VarChar(255)
+  message           String
+  notification_type String?   @db.VarChar(50)
+  resource_type     String?   @db.VarChar(50)
+  resource_id       String?   @db.Uuid
+  is_read           Boolean?  @default(false)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  users             users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([created_at], map: "idx_notifications_created")
+  @@index([is_read], map: "idx_notifications_read")
+  @@index([user_id], map: "idx_notifications_user")
+}
+
+model occasions {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String           @db.VarChar(100)
+  slug           String           @unique @db.VarChar(100)
+  description    String?
+  date           DateTime?        @db.Date
+  occasion_type  String?          @db.VarChar(50)
+  is_recurring   Boolean?         @default(false)
+  is_active      Boolean?         @default(true)
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
+  princi_moments princi_moments[]
+}
+
+model passion_categories {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String            @db.VarChar(100)
+  slug            String            @unique @db.VarChar(100)
+  description     String?
+  icon_url        String?
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  princi_passions princi_passions[]
+}
+
+model payments {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String?   @db.Uuid
+  payment_type   String    @db.VarChar(50)
+  reference_id   String?   @db.Uuid
+  amount         Decimal   @db.Decimal(10, 2)
+  currency       String?   @default("INR") @db.VarChar(3)
+  payment_method String?   @db.VarChar(50)
+  transaction_id String?   @db.VarChar(255)
+  status         String?   @default("pending") @db.VarChar(20)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  users          users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model perk_categories {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String         @db.VarChar(100)
+  slug         String         @unique @db.VarChar(100)
+  description  String?
+  icon_url     String?
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  princi_perks princi_perks[]
+}
+
+model perk_redemptions {
+  perk_id      String       @db.Uuid
+  user_id      String       @db.Uuid
+  redeemed_at  DateTime?    @default(now()) @db.Timestamp(6)
+  status       String?      @default("claimed") @db.VarChar(20)
+  princi_perks princi_perks @relation(fields: [perk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([perk_id, user_id])
+}
+
+model princi_awards {
+  id                                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  award_cycle_id                          String?           @db.Uuid
+  award_category_id                       String?           @db.Uuid
+  nominee_id                              String?           @db.Uuid
+  nominator_id                            String?           @db.Uuid
+  nomination_statement                    String?
+  supporting_documents                    String[]
+  status                                  String?           @default("nominated") @db.VarChar(20)
+  vote_count                              Int?              @default(0)
+  created_at                              DateTime?         @default(now()) @db.Timestamp(6)
+  award_votes                             award_votes[]
+  award_categories                        award_categories? @relation(fields: [award_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  award_cycles                            award_cycles?     @relation(fields: [award_cycle_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_princi_awards_nominator_idTousers users?            @relation("princi_awards_nominator_idTousers", fields: [nominator_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_princi_awards_nominee_idTousers   users?            @relation("princi_awards_nominee_idTousers", fields: [nominee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_care_resources {
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  wellness_category_id String?              @db.Uuid
+  title                String               @db.VarChar(255)
+  description          String?
+  content              String?
+  resource_type        String?              @db.VarChar(50)
+  media_url            String?
+  thumbnail_url        String?
+  is_premium           Boolean?             @default(false)
+  view_count           Int?                 @default(0)
+  created_at           DateTime?            @default(now()) @db.Timestamp(6)
+  wellness_categories  wellness_categories? @relation(fields: [wellness_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_catalyst_workshops {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                String                 @db.VarChar(255)
+  description          String?
+  instructor_name      String?                @db.VarChar(255)
+  instructor_bio       String?
+  instructor_image_url String?
+  workshop_type        String?                @db.VarChar(50)
+  duration_hours       Int?
+  start_date           DateTime               @db.Date
+  end_date             DateTime               @db.Date
+  schedule             Json?
+  is_paid              Boolean?               @default(false)
+  price                Decimal?               @db.Decimal(10, 2)
+  max_participants     Int?
+  current_participants Int?                   @default(0)
+  status               String?                @default("upcoming") @db.VarChar(20)
+  thumbnail_url        String?
+  materials_url        String?
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  catalyst_enrollments catalyst_enrollments[]
+}
+
+model princi_circle_forums {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                  @db.VarChar(255)
+  description           String?
+  category              String?                 @db.VarChar(100)
+  is_private            Boolean?                @default(false)
+  member_count          Int?                    @default(0)
+  post_count            Int?                    @default(0)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  circle_forum_members  circle_forum_members[]
+  princi_circle_threads princi_circle_threads[]
+}
+
+model princi_circle_replies {
+  id                          String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  thread_id                   String?                 @db.Uuid
+  user_id                     String?                 @db.Uuid
+  parent_id                   String?                 @db.Uuid
+  content                     String
+  like_count                  Int?                    @default(0)
+  created_at                  DateTime?               @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime?               @default(now()) @db.Timestamp(6)
+  princi_circle_replies       princi_circle_replies?  @relation("princi_circle_repliesToprinci_circle_replies", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_princi_circle_replies princi_circle_replies[] @relation("princi_circle_repliesToprinci_circle_replies")
+  princi_circle_threads       princi_circle_threads?  @relation(fields: [thread_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                       users?                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_circle_threads {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id              String?                 @db.Uuid
+  user_id               String?                 @db.Uuid
+  title                 String                  @db.VarChar(255)
+  content               String
+  is_pinned             Boolean?                @default(false)
+  is_locked             Boolean?                @default(false)
+  view_count            Int?                    @default(0)
+  reply_count           Int?                    @default(0)
+  last_reply_at         DateTime?               @db.Timestamp(6)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?               @default(now()) @db.Timestamp(6)
+  princi_circle_replies princi_circle_replies[]
+  princi_circle_forums  princi_circle_forums?   @relation(fields: [forum_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                 users?                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_edge_events {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title              String               @db.VarChar(255)
+  description        String?
+  speaker_name       String?              @db.VarChar(255)
+  speaker_bio        String?
+  speaker_image_url  String?
+  event_type         String?              @db.VarChar(50)
+  start_time         DateTime             @db.Timestamp(6)
+  end_time           DateTime             @db.Timestamp(6)
+  timezone           String?              @db.VarChar(50)
+  meeting_url        String?
+  meeting_id         String?              @db.VarChar(255)
+  password           String?              @db.VarChar(100)
+  max_participants   Int?
+  is_paid            Boolean?             @default(false)
+  price              Decimal?             @db.Decimal(10, 2)
+  is_featured        Boolean?             @default(false)
+  status             String?              @default("upcoming") @db.VarChar(20)
+  thumbnail_url      String?
+  recording_url      String?
+  participant_count  Int?                 @default(0)
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  edge_certificates  edge_certificates[]
+  edge_registrations edge_registrations[]
+
+  @@index([start_time], map: "idx_princi_edge_events_start")
+  @@index([status], map: "idx_princi_edge_events_status")
+}
+
+model princi_fest {
+  id                                         String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                                    String?                @db.Uuid
+  celebration_type                           String                 @db.VarChar(50)
+  title                                      String                 @db.VarChar(255)
+  message                                    String?
+  recipient_name                             String?                @db.VarChar(255)
+  recipient_user_id                          String?                @db.Uuid
+  ecard_url                                  String?
+  is_public                                  Boolean?               @default(true)
+  like_count                                 Int?                   @default(0)
+  comment_count                              Int?                   @default(0)
+  celebration_date                           DateTime?              @db.Date
+  created_at                                 DateTime?              @default(now()) @db.Timestamp(6)
+  users_princi_fest_recipient_user_idTousers users?                 @relation("princi_fest_recipient_user_idTousers", fields: [recipient_user_id], references: [id], onUpdate: NoAction)
+  users_princi_fest_user_idTousers           users?                 @relation("princi_fest_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_fest_comments                       princi_fest_comments[]
+}
+
+model princi_fest_comments {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fest_id     String?      @db.Uuid
+  user_id     String?      @db.Uuid
+  content     String
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
+  princi_fest princi_fest? @relation(fields: [fest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users?       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_flash {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id               String?                 @db.Uuid
+  title                 String                  @db.VarChar(255)
+  content               String
+  content_type          String                  @db.VarChar(20)
+  media_url             String?
+  thumbnail_url         String?
+  flash_type            String?                 @db.VarChar(50)
+  is_featured           Boolean?                @default(false)
+  like_count            Int?                    @default(0)
+  comment_count         Int?                    @default(0)
+  share_count           Int?                    @default(0)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  users                 users?                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_flash_comments princi_flash_comments[]
+}
+
+model princi_flash_comments {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  flash_id     String?       @db.Uuid
+  user_id      String?       @db.Uuid
+  content      String
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  princi_flash princi_flash? @relation(fields: [flash_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users?        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_moments {
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                 String?                   @db.Uuid
+  occasion_id             String?                   @db.Uuid
+  title                   String                    @db.VarChar(255)
+  message                 String?
+  video_url               String
+  thumbnail_url           String?
+  duration                Int?
+  status                  String?                   @default("processing") @db.VarChar(20)
+  like_count              Int?                      @default(0)
+  comment_count           Int?                      @default(0)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  occasions               occasions?                @relation(fields: [occasion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                   users?                    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_moments_comments princi_moments_comments[]
+  princi_moments_likes    princi_moments_likes[]
+}
+
+model princi_moments_comments {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moment_id      String?         @db.Uuid
+  user_id        String?         @db.Uuid
+  content        String
+  created_at     DateTime?       @default(now()) @db.Timestamp(6)
+  princi_moments princi_moments? @relation(fields: [moment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users          users?          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_moments_likes {
+  moment_id      String         @db.Uuid
+  user_id        String         @db.Uuid
+  created_at     DateTime?      @default(now()) @db.Timestamp(6)
+  princi_moments princi_moments @relation(fields: [moment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users          users          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([moment_id, user_id])
+}
+
+model princi_passions {
+  id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                  String?                    @db.Uuid
+  passion_category_id      String?                    @db.Uuid
+  title                    String                     @db.VarChar(255)
+  description              String?
+  content_type             String                     @db.VarChar(20)
+  media_url                String?
+  thumbnail_url            String?
+  status                   String?                    @default("published") @db.VarChar(20)
+  like_count               Int?                       @default(0)
+  comment_count            Int?                       @default(0)
+  created_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  passion_categories       passion_categories?        @relation(fields: [passion_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                    users?                     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_passions_comments princi_passions_comments[]
+}
+
+model princi_passions_comments {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  passion_id      String?          @db.Uuid
+  user_id         String?          @db.Uuid
+  content         String
+  created_at      DateTime?        @default(now()) @db.Timestamp(6)
+  princi_passions princi_passions? @relation(fields: [passion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users?           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_perks {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendor_id        String?            @db.Uuid
+  perk_category_id String?            @db.Uuid
+  title            String             @db.VarChar(255)
+  description      String
+  discount_type    String?            @db.VarChar(20)
+  discount_value   Decimal?           @db.Decimal(10, 2)
+  original_price   Decimal?           @db.Decimal(10, 2)
+  discounted_price Decimal?           @db.Decimal(10, 2)
+  terms_conditions String?
+  redemption_url   String?
+  promo_code       String?            @db.VarChar(100)
+  valid_from       DateTime?          @db.Date
+  valid_until      DateTime?          @db.Date
+  is_featured      Boolean?           @default(false)
+  is_active        Boolean?           @default(true)
+  view_count       Int?               @default(0)
+  click_count      Int?               @default(0)
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?          @default(now()) @db.Timestamp(6)
+  perk_redemptions perk_redemptions[]
+  perk_categories  perk_categories?   @relation(fields: [perk_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users            users?             @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_post_categories {
+  post_id      String       @db.Uuid
+  category_id  String       @db.Uuid
+  categories   categories   @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_posts princi_posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([post_id, category_id])
+}
+
+model princi_post_comments {
+  id                         String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  post_id                    String?                @db.Uuid
+  user_id                    String?                @db.Uuid
+  parent_id                  String?                @db.Uuid
+  content                    String
+  like_count                 Int?                   @default(0)
+  is_approved                Boolean?               @default(true)
+  created_at                 DateTime?              @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime?              @default(now()) @db.Timestamp(6)
+  princi_post_comments       princi_post_comments?  @relation("princi_post_commentsToprinci_post_comments", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_princi_post_comments princi_post_comments[] @relation("princi_post_commentsToprinci_post_comments")
+  princi_posts               princi_posts?          @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                      users?                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([post_id], map: "idx_princi_post_comments_post")
+  @@index([user_id], map: "idx_princi_post_comments_user")
+}
+
+model princi_post_likes {
+  post_id      String       @db.Uuid
+  user_id      String       @db.Uuid
+  created_at   DateTime?    @default(now()) @db.Timestamp(6)
+  princi_posts princi_posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([post_id, user_id])
+  @@index([post_id], map: "idx_princi_post_likes_post")
+}
+
+model princi_post_tags {
+  post_id      String       @db.Uuid
+  tag_id       String       @db.Uuid
+  princi_posts princi_posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tags         tags         @relation(fields: [tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([post_id, tag_id])
+}
+
+model princi_posts {
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  author_id              String?                  @db.Uuid
+  title                  String                   @db.VarChar(255)
+  slug                   String                   @unique @db.VarChar(255)
+  content                String
+  excerpt                String?
+  featured_image_url     String?
+  status                 String?                  @default("draft") @db.VarChar(20)
+  is_featured            Boolean?                 @default(false)
+  view_count             Int?                     @default(0)
+  like_count             Int?                     @default(0)
+  comment_count          Int?                     @default(0)
+  published_at           DateTime?                @db.Timestamp(6)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  princi_post_categories princi_post_categories[]
+  princi_post_comments   princi_post_comments[]
+  princi_post_likes      princi_post_likes[]
+  princi_post_tags       princi_post_tags[]
+  users                  users?                   @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([author_id], map: "idx_princi_posts_author")
+  @@index([is_featured], map: "idx_princi_posts_featured")
+  @@index([published_at], map: "idx_princi_posts_published")
+  @@index([status], map: "idx_princi_posts_status")
+}
+
+model princi_serve_initiatives {
+  id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                  String?                    @db.Uuid
+  title                    String                     @db.VarChar(255)
+  description              String
+  initiative_type          String?                    @db.VarChar(50)
+  start_date               DateTime?                  @db.Date
+  end_date                 DateTime?                  @db.Date
+  status                   String?                    @default("ongoing") @db.VarChar(20)
+  target_audience          String?                    @db.VarChar(255)
+  impact_metrics           Json?
+  media_urls               String[]
+  is_featured              Boolean?                   @default(false)
+  like_count               Int?                       @default(0)
+  comment_count            Int?                       @default(0)
+  created_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  updated_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  users                    users?                     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  serve_comments           serve_comments[]
+  serve_initiative_updates serve_initiative_updates[]
+}
+
+model princi_talks {
+  id                                       String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  interviewer_id                           String?                 @db.Uuid
+  interviewee_id                           String?                 @db.Uuid
+  title                                    String                  @db.VarChar(255)
+  description                              String?
+  video_url                                String
+  thumbnail_url                            String?
+  duration                                 Int?
+  status                                   String?                 @default("processing") @db.VarChar(20)
+  is_featured                              Boolean?                @default(false)
+  view_count                               Int?                    @default(0)
+  like_count                               Int?                    @default(0)
+  comment_count                            Int?                    @default(0)
+  published_at                             DateTime?               @db.Timestamp(6)
+  created_at                               DateTime?               @default(now()) @db.Timestamp(6)
+  users_princi_talks_interviewee_idTousers users?                  @relation("princi_talks_interviewee_idTousers", fields: [interviewee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_princi_talks_interviewer_idTousers users?                  @relation("princi_talks_interviewer_idTousers", fields: [interviewer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_talks_comments                    princi_talks_comments[]
+}
+
+model princi_talks_comments {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  talk_id      String?       @db.Uuid
+  user_id      String?       @db.Uuid
+  content      String
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  princi_talks princi_talks? @relation(fields: [talk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users?        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_torch_messages {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  torch_category_id    String?                @db.Uuid
+  title                String                 @db.VarChar(255)
+  message              String
+  audience             String?                @db.VarChar(50)
+  theme                String?                @db.VarChar(100)
+  occasion             String?                @db.VarChar(100)
+  is_premium           Boolean?               @default(false)
+  usage_count          Int?                   @default(0)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  torch_categories     torch_categories?      @relation(fields: [torch_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  torch_saved_messages torch_saved_messages[]
+}
+
+model princi_voice_categories {
+  video_id            String              @db.Uuid
+  category_id         String              @db.Uuid
+  categories          categories          @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_voice_videos princi_voice_videos @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([video_id, category_id])
+}
+
+model princi_voice_comments {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  video_id            String?              @db.Uuid
+  user_id             String?              @db.Uuid
+  content             String
+  like_count          Int?                 @default(0)
+  created_at          DateTime?            @default(now()) @db.Timestamp(6)
+  users               users?               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_voice_videos princi_voice_videos? @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model princi_voice_likes {
+  video_id            String              @db.Uuid
+  user_id             String              @db.Uuid
+  created_at          DateTime?           @default(now()) @db.Timestamp(6)
+  users               users               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  princi_voice_videos princi_voice_videos @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([video_id, user_id])
+}
+
+model princi_voice_videos {
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                 String?                   @db.Uuid
+  title                   String                    @db.VarChar(255)
+  description             String?
+  video_url               String
+  thumbnail_url           String?
+  duration                Int?
+  file_size               BigInt?
+  status                  String?                   @default("processing") @db.VarChar(20)
+  is_featured             Boolean?                  @default(false)
+  view_count              Int?                      @default(0)
+  like_count              Int?                      @default(0)
+  comment_count           Int?                      @default(0)
+  share_count             Int?                      @default(0)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  princi_voice_categories princi_voice_categories[]
+  princi_voice_comments   princi_voice_comments[]
+  princi_voice_likes      princi_voice_likes[]
+  users                   users?                    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([is_featured], map: "idx_princi_voice_featured")
+  @@index([status], map: "idx_princi_voice_status")
+  @@index([user_id], map: "idx_princi_voice_user")
+}
+
+model quest_answers {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quest_id        String?          @db.Uuid
+  user_id         String?          @db.Uuid
+  question_id     String?          @db.Uuid
+  answer          String?
+  is_correct      Boolean?
+  points_earned   Int?             @default(0)
+  answered_at     DateTime?        @default(now()) @db.Timestamp(6)
+  quests          quests?          @relation(fields: [quest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  quest_questions quest_questions? @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users?           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model quest_participants {
+  quest_id     String    @db.Uuid
+  user_id      String    @db.Uuid
+  started_at   DateTime? @default(now()) @db.Timestamp(6)
+  completed_at DateTime? @db.Timestamp(6)
+  score        Int?      @default(0)
+  rank         Int?
+  quests       quests    @relation(fields: [quest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([quest_id, user_id])
+}
+
+model quest_questions {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quest_id       String?         @db.Uuid
+  question_text  String
+  question_type  String?         @db.VarChar(20)
+  options        Json?
+  correct_answer String?
+  points         Int?            @default(1)
+  order_index    Int?
+  created_at     DateTime?       @default(now()) @db.Timestamp(6)
+  quest_answers  quest_answers[]
+  quests         quests?         @relation(fields: [quest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model quests {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title              String               @db.VarChar(255)
+  description        String?
+  quest_type         String?              @db.VarChar(50)
+  category           String?              @db.VarChar(100)
+  start_date         DateTime             @db.Timestamp(6)
+  end_date           DateTime             @db.Timestamp(6)
+  is_active          Boolean?             @default(true)
+  prize_description  String?
+  max_participants   Int?
+  participant_count  Int?                 @default(0)
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  quest_answers      quest_answers[]
+  quest_participants quest_participants[]
+  quest_questions    quest_questions[]
+}
+
+model roles {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String       @unique @db.VarChar(50)
+  description String?
+  permissions Json?
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
+  user_roles  user_roles[]
+}
+
+model school_course_modules {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course_id        String?         @db.Uuid
+  title            String          @db.VarChar(255)
+  description      String?
+  content          String?
+  video_url        String?
+  resources_url    String[]
+  order_index      Int?
+  duration_minutes Int?
+  created_at       DateTime?       @default(now()) @db.Timestamp(6)
+  school_courses   school_courses? @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model school_courses {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                 String                  @db.VarChar(255)
+  description           String?
+  instructor_name       String?                 @db.VarChar(255)
+  instructor_bio        String?
+  course_type           String?                 @db.VarChar(50)
+  duration_hours        Int?
+  difficulty_level      String?                 @db.VarChar(20)
+  prerequisites         String?
+  learning_objectives   String[]
+  is_paid               Boolean?                @default(false)
+  price                 Decimal?                @db.Decimal(10, 2)
+  thumbnail_url         String?
+  status                String?                 @default("published") @db.VarChar(20)
+  enrollment_count      Int?                    @default(0)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  school_course_modules school_course_modules[]
+  school_enrollments    school_enrollments[]
+}
+
+model school_enrollments {
+  course_id       String         @db.Uuid
+  user_id         String         @db.Uuid
+  enrolled_at     DateTime?      @default(now()) @db.Timestamp(6)
+  progress        Int?           @default(0)
+  completed       Boolean?       @default(false)
+  certificate_url String?
+  school_courses  school_courses @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([course_id, user_id])
+}
+
+model serve_comments {
+  id                       String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  initiative_id            String?                   @db.Uuid
+  user_id                  String?                   @db.Uuid
+  content                  String
+  created_at               DateTime?                 @default(now()) @db.Timestamp(6)
+  princi_serve_initiatives princi_serve_initiatives? @relation(fields: [initiative_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                    users?                    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model serve_initiative_updates {
+  id                       String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  initiative_id            String?                   @db.Uuid
+  user_id                  String?                   @db.Uuid
+  title                    String                    @db.VarChar(255)
+  content                  String
+  media_urls               String[]
+  created_at               DateTime?                 @default(now()) @db.Timestamp(6)
+  princi_serve_initiatives princi_serve_initiatives? @relation(fields: [initiative_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                    users?                    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model sponsored_content {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sponsor_id       String?   @db.Uuid
+  content_type     String    @db.VarChar(50)
+  content_id       String    @db.Uuid
+  sponsorship_type String?   @db.VarChar(50)
+  start_date       DateTime  @db.Date
+  end_date         DateTime  @db.Date
+  cost             Decimal?  @db.Decimal(10, 2)
+  status           String?   @default("active") @db.VarChar(20)
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  users            users?    @relation(fields: [sponsor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model subscriptions {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                String?   @db.Uuid
+  plan_type              String    @db.VarChar(50)
+  status                 String    @db.VarChar(20)
+  start_date             DateTime  @db.Date
+  end_date               DateTime? @db.Date
+  payment_method         String?   @db.VarChar(50)
+  stripe_subscription_id String?   @db.VarChar(255)
+  created_at             DateTime? @default(now()) @db.Timestamp(6)
+  updated_at             DateTime? @default(now()) @db.Timestamp(6)
+  users                  users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model tags {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String             @unique @db.VarChar(50)
+  slug             String             @unique @db.VarChar(50)
+  color            String?            @db.VarChar(7)
+  usage_count      Int?               @default(0)
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  princi_post_tags princi_post_tags[]
+}
+
+model torch_categories {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                  @db.VarChar(100)
+  slug                  String                  @unique @db.VarChar(100)
+  description           String?
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  princi_torch_messages princi_torch_messages[]
+}
+
+model torch_saved_messages {
+  message_id            String                @db.Uuid
+  user_id               String                @db.Uuid
+  saved_at              DateTime?             @default(now()) @db.Timestamp(6)
+  princi_torch_messages princi_torch_messages @relation(fields: [message_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                 users                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([message_id, user_id])
+}
+
+model user_roles {
+  user_id     String    @db.Uuid
+  role_id     String    @db.Uuid
+  assigned_at DateTime? @default(now()) @db.Timestamp(6)
+  roles       roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([user_id, role_id])
+  @@index([role_id], map: "idx_user_roles_role_id")
+  @@index([user_id], map: "idx_user_roles_user_id")
+}
+
+model users {
+  id                                                             String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                                          String                            @unique @db.VarChar(255)
+  password_hash                                                  String                            @db.VarChar(255)
+  first_name                                                     String                            @db.VarChar(100)
+  last_name                                                      String                            @db.VarChar(100)
+  phone                                                          String?                           @db.VarChar(20)
+  profile_image_url                                              String?
+  bio                                                            String?
+  school_name                                                    String?                           @db.VarChar(255)
+  school_address                                                 String?
+  position                                                       String?                           @db.VarChar(100)
+  experience_years                                               Int?
+  education_qualification                                        String?
+  specialization                                                 String?
+  date_of_birth                                                  DateTime?                         @db.Date
+  join_date                                                      DateTime?                         @default(dbgenerated("CURRENT_DATE")) @db.Date
+  is_active                                                      Boolean?                          @default(true)
+  is_verified                                                    Boolean?                          @default(false)
+  email_verified_at                                              DateTime?                         @db.Timestamp(6)
+  last_login_at                                                  DateTime?                         @db.Timestamp(6)
+  created_at                                                     DateTime?                         @default(now()) @db.Timestamp(6)
+  updated_at                                                     DateTime?                         @default(now()) @db.Timestamp(6)
+  analytics_events                                               analytics_events[]
+  award_votes                                                    award_votes[]
+  catalyst_enrollments                                           catalyst_enrollments[]
+  circle_forum_members                                           circle_forum_members[]
+  edge_certificates                                              edge_certificates[]
+  edge_registrations                                             edge_registrations[]
+  hub_discussion_replies                                         hub_discussion_replies[]
+  hub_discussions                                                hub_discussions[]
+  hub_event_registrations                                        hub_event_registrations[]
+  hub_events                                                     hub_events[]
+  hub_members                                                    hub_members[]
+  hubs                                                           hubs[]
+  mentorship_connections_mentorship_connections_mentee_idTousers mentorship_connections[]          @relation("mentorship_connections_mentee_idTousers")
+  mentorship_connections_mentorship_connections_mentor_idTousers mentorship_connections[]          @relation("mentorship_connections_mentor_idTousers")
+  mentorship_profiles                                            mentorship_profiles[]
+  notifications                                                  notifications[]
+  payments                                                       payments[]
+  perk_redemptions                                               perk_redemptions[]
+  princi_awards_princi_awards_nominator_idTousers                princi_awards[]                   @relation("princi_awards_nominator_idTousers")
+  princi_awards_princi_awards_nominee_idTousers                  princi_awards[]                   @relation("princi_awards_nominee_idTousers")
+  princi_circle_replies                                          princi_circle_replies[]
+  princi_circle_threads                                          princi_circle_threads[]
+  princi_fest_princi_fest_recipient_user_idTousers               princi_fest[]                     @relation("princi_fest_recipient_user_idTousers")
+  princi_fest_princi_fest_user_idTousers                         princi_fest[]                     @relation("princi_fest_user_idTousers")
+  princi_fest_comments                                           princi_fest_comments[]
+  princi_flash                                                   princi_flash[]
+  princi_flash_comments                                          princi_flash_comments[]
+  princi_moments                                                 princi_moments[]
+  princi_moments_comments                                        princi_moments_comments[]
+  princi_moments_likes                                           princi_moments_likes[]
+  princi_passions                                                princi_passions[]
+  princi_passions_comments                                       princi_passions_comments[]
+  princi_perks                                                   princi_perks[]
+  princi_post_comments                                           princi_post_comments[]
+  princi_post_likes                                              princi_post_likes[]
+  princi_posts                                                   princi_posts[]
+  princi_serve_initiatives                                       princi_serve_initiatives[]
+  princi_talks_princi_talks_interviewee_idTousers                princi_talks[]                    @relation("princi_talks_interviewee_idTousers")
+  princi_talks_princi_talks_interviewer_idTousers                princi_talks[]                    @relation("princi_talks_interviewer_idTousers")
+  princi_talks_comments                                          princi_talks_comments[]
+  princi_voice_comments                                          princi_voice_comments[]
+  princi_voice_likes                                             princi_voice_likes[]
+  princi_voice_videos                                            princi_voice_videos[]
+  quest_answers                                                  quest_answers[]
+  quest_participants                                             quest_participants[]
+  school_enrollments                                             school_enrollments[]
+  serve_comments                                                 serve_comments[]
+  serve_initiative_updates                                       serve_initiative_updates[]
+  sponsored_content                                              sponsored_content[]
+  subscriptions                                                  subscriptions[]
+  torch_saved_messages                                           torch_saved_messages[]
+  user_roles                                                     user_roles[]
+  wellness_challenge_participants                                wellness_challenge_participants[]
+
+  @@index([is_active], map: "idx_users_active")
+  @@index([email], map: "idx_users_email")
+}
+
+model wellness_categories {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                  @db.VarChar(100)
+  slug                  String                  @unique @db.VarChar(100)
+  description           String?
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  princi_care_resources princi_care_resources[]
+}
+
+model wellness_challenge_participants {
+  challenge_id        String              @db.Uuid
+  user_id             String              @db.Uuid
+  joined_at           DateTime?           @default(now()) @db.Timestamp(6)
+  progress            Int?                @default(0)
+  wellness_challenges wellness_challenges @relation(fields: [challenge_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users               users               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([challenge_id, user_id])
+}
+
+model wellness_challenges {
+  id                              String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                           String                            @db.VarChar(255)
+  description                     String?
+  start_date                      DateTime                          @db.Date
+  end_date                        DateTime                          @db.Date
+  challenge_type                  String?                           @db.VarChar(50)
+  is_active                       Boolean?                          @default(true)
+  participant_count               Int?                              @default(0)
+  created_at                      DateTime?                         @default(now()) @db.Timestamp(6)
+  wellness_challenge_participants wellness_challenge_participants[]
+}
