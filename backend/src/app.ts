@@ -165,9 +165,14 @@ const PORT = process.env.PORT || 3001;
 
 async function startServer() {
   try {
-    // Connect to Redis
-    await connectRedis();
-    logger.info('Connected to Redis');
+    // Connect to Redis (optional - won't crash if fails)
+    try {
+      await connectRedis();
+      logger.info('Connected to Redis');
+    } catch (redisError) {
+      logger.warn('Redis connection failed, continuing without Redis:', (redisError as Error).message);
+      logger.info('Server will work without Redis caching');
+    }
 
     server.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);

@@ -23,7 +23,6 @@ export const authenticateToken = async (
   try {
     console.log('🔍 AUTH DEBUG: Starting authentication...');
     
-    const redisService = new RedisService();
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -35,11 +34,17 @@ export const authenticateToken = async (
       throw new AppError('Access token required', 401, 'NO_TOKEN');
     }
 
-    // Check if token is blacklisted
-    const isBlacklisted = await redisService.get(`blacklist:${token}`);
-    if (isBlacklisted) {
-      console.log('🔍 AUTH DEBUG: Token is blacklisted');
-      throw new AppError('Token has been revoked', 401, 'TOKEN_REVOKED');
+    // Check if token is blacklisted (optional - skip if Redis not available)
+    try {
+      const redisService = new RedisService();
+      const isBlacklisted = await redisService.get(`blacklist:${token}`);
+      if (isBlacklisted) {
+        console.log('🔍 AUTH DEBUG: Token is blacklisted');
+        throw new AppError('Token has been revoked', 401, 'TOKEN_REVOKED');
+      }
+    } catch (redisError) {
+      console.log('🔍 AUTH DEBUG: Redis not available, skipping blacklist check');
+      // Continue without Redis blacklist check
     }
 
     console.log('🔍 AUTH DEBUG: Verifying JWT token...');
