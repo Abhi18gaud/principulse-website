@@ -54,7 +54,7 @@ export const LoginPage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       // Dispatch login action (slice will handle user setting)
-      const result = await dispatch(login({ email: formData.email, password: formData.password }))
+      const result = await dispatch(login({ email: formData.email, password: formData.password })) as any
       if (login.fulfilled.match(result)) {
         navigate('/dashboard')
       } else {

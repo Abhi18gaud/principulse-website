@@ -82,15 +82,15 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.first_name || '',
-        lastName: user.last_name || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         email: user.email || '',
         phone: user.phone || '',
         bio: user.bio || '',
-        school: user.school_name || '',
-        role: user.role || '',
-        experience: user.experience || '',
-        location: user.location || ''
+        schoolName: user.schoolName || '',
+        position: user.position || '',
+        experienceYears: user.experienceYears || '',
+        schoolAddress: ''
       })
     }
     setLoading(false)
@@ -274,10 +274,10 @@ export const ProfilePage: React.FC = () => {
 <div className="flex items-center space-x-6 mb-6">
   <div className="relative">
     <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-      {user?.profile_image_url ? (
+      {user?.profileImageUrl ? (
         <img 
-          src={user.profile_image_url} 
-          alt={user.first_name + ' ' + user.last_name}
+          src={user.profileImageUrl} 
+          alt={user.firstName + ' ' + user.lastName}
           className="w-full h-full object-cover"
         />
       ) : (
@@ -301,10 +301,10 @@ export const ProfilePage: React.FC = () => {
 
   <div className="flex-1">
     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-      {user?.first_name} {user?.last_name}
+      {user?.firstName} {user?.lastName}
     </h3>
-    <p className="text-gray-600 mb-4">{user?.role}</p>
-    <p className="text-gray-600 mb-1">{user?.school_name}</p>
+    <p className="text-gray-600 mb-4">{user?.position}</p>
+    <p className="text-gray-600 mb-1">{user?.schoolName}</p>
     <p className="text-sm text-gray-500 mb-4">Member since {mockStats.joinDate}</p>
   </div>
 </div>

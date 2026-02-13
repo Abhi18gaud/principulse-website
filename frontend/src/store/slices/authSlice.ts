@@ -9,6 +9,13 @@ interface User {
   phone?: string
   schoolName?: string
   position?: string
+  bio?: string
+  profileImageUrl?: string
+  experienceYears?: string
+  educationQualification?: string
+  specialization?: string
+  dateOfBirth?: string
+  joinDate?: string
   isActive: boolean
   isVerified: boolean
   emailVerifiedAt?: string
