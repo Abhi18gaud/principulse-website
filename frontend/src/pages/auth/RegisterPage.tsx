@@ -61,7 +61,7 @@ export const RegisterPage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1500))
 
       // Dispatch register action (slice will handle user setting)
-      await dispatch(register(formData)) 
+      await dispatch(register(formData)) as any
 
       navigate('/verify-email')
     } catch (err) {
