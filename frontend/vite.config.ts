@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    preview: {
+      port: 4173,
+      allowedHosts: ['principulse-website-1.onrender.com', 'localhost', '127.0.0.1']
+    },
   server: {
     port: 3000,
     host: true,
