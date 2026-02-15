@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
 import { store } from './store/index'
 import './styles/globals.css'
+import './styles/test.css'
 
 // Create a client
 const queryClient = new QueryClient({
