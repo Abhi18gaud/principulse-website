@@ -31,7 +31,7 @@ const upload = multer({
 });
 
 // Upload file to S3
-export async function uploadToS3(file: Express.Multer.File) {
+export async function uploadToS3(file: any) {
   const key = `uploads/${Date.now()}-${file.originalname}`;
   
   const params = {
