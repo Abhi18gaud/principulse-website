@@ -58,6 +58,7 @@ const io = new Server(server, {
       'http://localhost:3000',
       'http://localhost:4173',
       'https://principulse-website-1.onrender.com',
+      'https://principulse.online',
       process.env.FRONTEND_URL
     ].filter(Boolean),
     methods: ['GET', 'POST'],
@@ -87,6 +88,7 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:4173',
     'https://principulse-website-1.onrender.com',
+    'https://principulse.online',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true,
