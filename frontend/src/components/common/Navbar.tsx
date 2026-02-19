@@ -32,8 +32,13 @@ export const Navbar: React.FC = () => {
     window.location.href = '/login'
   }
 
-  const mainNavItems = [
-    { path: '/pages', label: 'Home', icon: Home },
+  // Navigation items for non-authenticated users
+  const publicNavItems = [
+    { path: '/', label: 'Home', icon: Home },
+  ]
+
+  // Navigation items for authenticated users
+  const privateNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: Home },
     { path: '/princi-posts', label: 'PrinciPosts', icon: BookOpen },
     { path: '/princi-voice', label: 'PrinciVoice', icon: Video },
@@ -56,12 +61,14 @@ export const Navbar: React.FC = () => {
     { path: '/princi-hubs', label: 'PrinciHubs', icon: MapPin },
   ]
 
+  const mainNavItems = isAuthenticated ? privateNavItems : publicNavItems
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">P</span>
             </div>
@@ -101,7 +108,7 @@ export const Navbar: React.FC = () => {
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Notifications */}
+            {/* Notifications - only for authenticated users */}
             {isAuthenticated && (
               <button className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 relative">
                 <Bell className="w-5 h-5" />
@@ -153,12 +160,21 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Sign In
-              </Link>
+              /* Login/Signup buttons for non-authenticated users */
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Join Principulse
+                </Link>
+              </div>
             )}
 
             {/* Mobile menu button */}
@@ -212,6 +228,28 @@ export const Navbar: React.FC = () => {
                   </Link>
                 )
               })}
+              
+              {/* Show login/signup in mobile menu for non-authenticated users */}
+              {!isAuthenticated && (
+                <>
+                  <div className="border-t border-gray-200 mt-4 pt-4">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      Join Principulse
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

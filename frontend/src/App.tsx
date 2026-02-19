@@ -6,6 +6,7 @@ import { RootState } from './store/index'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { Layout } from './components/layout/Layout'
 import { LoadingSpinner } from './components/ui/LoadingSpinner'
+import { AuthInitializer } from './components/auth/AuthInitializer'
 
 // Auth pages
 import { LoginPage } from './pages/auth/LoginPage'
@@ -18,6 +19,7 @@ import { VerifyEmailPage } from './pages/auth/VerifyEmailPage'
 import { DashboardPage } from './pages/dashboard/DashboardPage'
 import { ProfilePage } from './pages/profile/ProfilePage'
 import { HomePage } from './pages/HomePage'
+import { ExplorePage } from './pages/ExplorePage'
 
 // Feature pages
 import { PrinciPostsPage } from './pages/features/PrinciPostsPage'
@@ -58,10 +60,11 @@ function App() {
   }
 
   return (
-    <>
+    <AuthInitializer>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route
           path="/login"
           element={
@@ -87,11 +90,9 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="pages" element={<HomePage />} />
           <Route path="profile" element={<ProfilePage />} />
-
+          <Route path="pages" element={<HomePage />} />
           {/* Feature routes */}
           <Route path="princi-posts" element={<PrinciPostsPage />} />
           <Route path="princi-posts/create" element={<div>Create Post Page - Coming Soon</div>} />
@@ -168,7 +169,7 @@ function App() {
         expand={false}
         duration={4000}
       />
-    </>
+    </AuthInitializer>
   )
 }
 

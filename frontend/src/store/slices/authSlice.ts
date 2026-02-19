@@ -8,6 +8,7 @@ interface User {
   lastName: string
   phone?: string
   schoolName?: string
+  schoolAddress?: string
   position?: string
   bio?: string
   profileImageUrl?: string
@@ -141,6 +142,23 @@ const authSlice = createSlice({
       state.user = null
       state.isAuthenticated = false
       state.isLoading = false
+      
+      // Clear user data from localStorage
+      localStorage.removeItem('userData')
+    },
+    // Initialize auth state from localStorage
+    initializeAuth: (state) => {
+      const token = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+      
+      if (token && refreshToken) {
+        state.isAuthenticated = true
+        // We'll fetch user data separately
+      } else {
+        state.isAuthenticated = false
+        state.user = null
+      }
+      state.isLoading = false
     },
   },
   extraReducers: (builder) => {
@@ -155,6 +173,9 @@ const authSlice = createSlice({
         state.user = action.payload.user
         state.isAuthenticated = true
         state.error = null
+        
+        // Store user data in localStorage for persistence
+        localStorage.setItem('userData', JSON.stringify(action.payload.user))
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false
@@ -172,6 +193,9 @@ const authSlice = createSlice({
         state.user = action.payload.user
         state.isAuthenticated = true
         state.error = null
+        
+        // Store user data in localStorage for persistence
+        localStorage.setItem('userData', JSON.stringify(action.payload.user))
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false
@@ -188,6 +212,9 @@ const authSlice = createSlice({
         state.user = null
         state.isAuthenticated = false
         state.error = null
+        
+        // Clear user data from localStorage
+        localStorage.removeItem('userData')
       })
       .addCase(logout.rejected, (state, action) => {
         state.isLoading = false
@@ -246,5 +273,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { clearError, setUser, clearUser } = authSlice.actions
+export const { clearError, setUser, clearUser, initializeAuth } = authSlice.actions
 export default authSlice.reducer
