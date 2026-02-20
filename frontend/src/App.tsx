@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { Toaster } from 'sonner'
 
@@ -52,6 +52,31 @@ import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage'
 import { NotFoundPage } from './pages/error/NotFoundPage'
 import { ServerErrorPage } from './pages/error/ServerErrorPage'
 
+// Wrapper components for Layout
+const HomePageWithLayout = () => (
+  <Layout>
+    <HomePage />
+  </Layout>
+)
+
+const ExplorePageWithLayout = () => (
+  <Layout>
+    <ExplorePage />
+  </Layout>
+)
+
+const DashboardPageWithLayout = () => (
+  <Layout>
+    <DashboardPage />
+  </Layout>
+)
+
+const ProfilePageWithLayout = () => (
+  <Layout>
+    <ProfilePage />
+  </Layout>
+)
+
 function App() {
   const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth)
 
@@ -63,8 +88,8 @@ function App() {
     <AuthInitializer>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/" element={<HomePageWithLayout />} />
+        <Route path="/explore" element={<ExplorePageWithLayout />} />
         <Route
           path="/login"
           element={
@@ -86,13 +111,13 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Layout />
+              <Outlet />
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="pages" element={<HomePage />} />
+          <Route path="dashboard" element={<DashboardPageWithLayout />} />
+          <Route path="profile" element={<ProfilePageWithLayout />} />
+          <Route path="pages" element={<HomePageWithLayout />} />
           {/* Feature routes */}
           <Route path="princi-posts" element={<PrinciPostsPage />} />
           <Route path="princi-posts/create" element={<div>Create Post Page - Coming Soon</div>} />

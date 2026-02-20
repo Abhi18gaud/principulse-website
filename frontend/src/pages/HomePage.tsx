@@ -267,72 +267,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Navigation Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/pages" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Star className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">Principulse</span>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link to="/princi-posts" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                PrinciPosts
-              </Link>
-              <Link to="/princi-voice" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                PrinciVoice
-              </Link>
-              <Link to="/princi-quest" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                PrinciQuest
-              </Link>
-              <Link to="/princi-edge" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                PrinciEdge
-              </Link>
-            </nav>
-
-            {/* User Actions */}
-            <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <>
-                  <button className="p-2 text-gray-600 hover:text-gray-900 relative">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                  </button>
-                  <div className="relative">
-                    <button className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                        <User className="w-4 h-4 text-gray-600" />
-                      </div>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/login"
-                    className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -344,20 +278,7 @@ export const HomePage: React.FC = () => {
                 A Distinguished Network for K–12 School Leaders
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto">
-              Connecting Leadership. Advancing Institutions. Elevating Education.
-            </p>
-            <div className="text-lg md:text-xl text-blue-100 mb-12 max-w-5xl mx-auto leading-relaxed">
-              <p className="mb-4">
-                Principulse is a curated professional ecosystem created exclusively for school leaders entrusted with institutional vision, governance, and strategic responsibility.
-              </p>
-              <p className="mb-4">
-                It is a focused platform where principals and senior school leaders engage with peers, exchange high-level insights, strengthen leadership capabilities, and contribute meaningfully to advancement of education.
-              </p>
-              <p>
-                Principulse is not a general networking space. It is a structured leadership forum built on professional parity, discretion, and excellence.
-              </p>
-            </div>
+           
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/explore"
@@ -394,199 +315,9 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Our Purpose Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Our Purpose
-            </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              The role of a school leader extends far beyond administration. It demands strategic clarity, emotional intelligence, institutional foresight, and a commitment to continuous growth.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Engage in relevant, peer-level dialogue
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Access structured professional development
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MapPin className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Collaborate across regions
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award className="w-8 h-8 text-yellow-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Gain credible recognition
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Strengthen personal and institutional impact
-              </h3>
-            </div>
-          </div>
 
-          <div className="text-center mt-12">
-            <p className="text-lg text-gray-700 font-medium">
-              We believe strong institutions are shaped by informed, connected, and empowered leaders.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Growing Together
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join thousands of school leaders already making a difference
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">
-                {stats.totalUsers.toLocaleString()}
-              </div>
-              <div className="text-gray-600">School Leaders</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 mb-2">
-                {stats.totalPosts.toLocaleString()}
-              </div>
-              <div className="text-gray-600">Posts Shared</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 mb-2">
-                {stats.totalVideos.toLocaleString()}
-              </div>
-              <div className="text-gray-600">Videos Created</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-600 mb-2">
-                {stats.totalEvents.toLocaleString()}
-              </div>
-              <div className="text-gray-600">Events Hosted</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Membership & Eligibility Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Membership & Eligibility
-            </h2>
-            <p className="text-2xl text-gray-600 font-medium mb-4">
-              A Curated Leadership Collective
-            </p>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
-              Principulse is intentionally designed as a peer-level network. Membership is extended only to individuals serving in recognized leadership roles within K–12 institutions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Eligible Professionals Include:
-              </h3>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Principals</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Heads of School</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Vice Principals</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Headmasters / Headmistresses</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Academic Heads</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Departmental Heads with institutional leadership responsibilities</span>
-                </li>
-              </ul>
-              <p className="text-sm text-gray-600 mt-6 italic">
-                All applications are subject to professional review to ensure relevance, credibility, and alignment with purpose of network.
-              </p>
-            </div>
-
-            <div className="bg-red-50 rounded-xl p-8 border border-red-100">
-              <h3 className="text-2xl font-bold text-red-900 mb-6">
-                Not Eligible at Present:
-              </h3>
-              <ul className="space-y-3">
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">Teachers</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">School Owners</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">Chairpersons</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">Governing Board Members</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">Leaders of Preschools</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
-                  <span className="text-red-800">Principals of Colleges, Universities, and Professional Institutes</span>
-                </li>
-              </ul>
-              <p className="text-sm text-red-700 mt-6 italic">
-                Dedicated communities tailored to these roles are under development and will be introduced separately.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      
       {/* Features Grid - Principulse Leadership Framework */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -594,9 +325,9 @@ export const HomePage: React.FC = () => {
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
               The Principulse Leadership Framework
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+            {/* <p className="text-xl text-gray-600 max-w-4xl mx-auto">
               Principulse integrates thought leadership, professional development, collaboration, wellness, recognition, and institutional engagement within a unified structure.
-            </p>
+            </p> */}
           </div>
 
           {/* Thought Leadership & Professional Expression */}
@@ -887,66 +618,96 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* Why Principulse Section */}
-      <section className="py-20 bg-white">
+{/* Membership & Eligibility Section */}
+      <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Why Principulse
+              Membership & Eligibility
             </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                A Peer-Level Leadership Network
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Structured Professional Development
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MapPin className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Strategic Regional and National Collaboration
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award className="w-8 h-8 text-yellow-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Credible Recognition & Visibility
-              </h3>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Integrated Leadership Growth
-              </h3>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-lg text-gray-700 font-medium italic">
-              Principulse is built on the principle that leadership thrives in purposeful, well-governed professional communities.
+            <p className="text-2xl text-gray-600 font-medium mb-4">
+              A Curated Leadership Collective
             </p>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
+              Principulse is intentionally designed as a peer-level network. Membership is extended only to individuals serving in recognized leadership roles within K–12 institutions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                Eligible Professionals Include:
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Principals</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Heads of School</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Vice Principals</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Headmasters / Headmistresses</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Academic Heads</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Departmental Heads with institutional leadership responsibilities</span>
+                </li>
+              </ul>
+              <p className="text-sm text-gray-600 mt-6 italic">
+                All applications are subject to professional review to ensure relevance, credibility, and alignment with purpose of network.
+              </p>
+            </div>
+
+            <div className="bg-red-50 rounded-xl p-8 border border-red-100">
+              <h3 className="text-2xl font-bold text-red-900 mb-6">
+                Not Eligible at Present:
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">Teachers</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">School Owners</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">Chairpersons</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">Governing Board Members</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">Leaders of Preschools</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                  <span className="text-red-800">Principals of Colleges, Universities, and Professional Institutes</span>
+                </li>
+              </ul>
+              <p className="text-sm text-red-700 mt-6 italic">
+                Dedicated communities tailored to these roles are under development and will be introduced separately.
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Final CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
